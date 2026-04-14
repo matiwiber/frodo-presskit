@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FRODO — DJ / Producer</title>
+  <meta name="description" content="FRODO — DJ y productor de techno, tech house y electrónica experimental. La Plata, Buenos Aires." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --acid: #c8ff00;
+      --acid-dim: rgba(200, 255, 0, 0.08);
+      --acid-mid: rgba(200, 255, 0, 0.25);
+      --bg: #060606;
+      --bg-1: #0c0c0c;
+      --bg-2: #111111;
+      --border: rgba(255,255,255,0.06);
+      --border-acid: rgba(200, 255, 0, 0.2);
+      --text: #d4d4d4;
+      --text-dim: #4a4a4a;
+      --text-muted: #2a2a2a;
+      --mono: 'Share Tech Mono', monospace;
+      --display: 'Bebas Neue', sans-serif;
+      --body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 2px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--acid); }
+
+    /* NOISE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    nav.scrolled {
+      border-color: var(--border);
+      background: rgba(6,6,6,0.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--acid);
+      letter-spacing: 0.15em;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--acid); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated grid */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: grid-shift 20s linear infinite;
+    }
+
+    @keyframes grid-shift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); }
+    }
+
+    /* Vignette */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 30%, var(--bg) 100%);
+      pointer-events: none;
+    }
+
+    /* Scan line */
+    .scan {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: var(--acid);
+      opacity: 0;
+      animation: scan-anim 6s ease-in-out infinite;
+      z-index: 3;
+    }
+
+    @keyframes scan-anim {
+      0% { top: 0%; opacity: 0; }
+      5% { opacity: 0.4; }
+      90% { opacity: 0.4; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 5;
+    }
+
+    .hero-sys {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--acid);
+      letter-spacing: 0.3em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fade-up 0.6s ease forwards 0.3s;
+    }
+
+    .hero-sys span { color: var(--text-dim); }
+
+    .hero-name {
+      font-family: var(--display);
+      font-size: clamp(90px, 22vw, 220px);
+      line-height: 0.88;
+      letter-spacing: 0.04em;
+      color: #fff;
+      position: relative;
+      display: inline-block;
+      opacity: 0;
+      animation: fade-up 0.6s ease forwards 0.5s;
+    }
+
+    .hero-name::after {
+      content: 'FRODO';
+      position: absolute;
+      left: 3px; top: 3px;
+      color: var(--acid);
+      opacity: 0;
+      clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+      animation: glitch 8s ease-in-out infinite 2s;
+    }
+
+    @keyframes glitch {
+      0%, 92%, 100% { opacity: 0; left: 3px; }
+      93% { opacity: 0.7; left: -4px; }
+      94% { opacity: 0; left: 3px; }
+      96% { opacity: 0.5; left: 6px; }
+      97% { opacity: 0; }
+    }
+
+    .hero-sub {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fade-up 0.6s ease forwards 0.7s;
+    }
+
+    .hero-sub-line {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+    }
+
+    .hero-sub-line strong { color: var(--text); font-weight: 400; }
+
+    .hero-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: 1px solid var(--text-muted);
+      padding: 4px 12px;
+      color: var(--text-dim);
+    }
+
+    .tag.active {
+      border-color: var(--border-acid);
+      color: var(--acid);
+      background: var(--acid-dim);
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* SECTIONS */
+    section {
+      padding: 5rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .section-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--acid);
+      letter-spacing: 0.3em;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-title {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+
+    /* BIO */
+    .bio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .bio-text {
+      font-size: 15px;
+      line-height: 1.85;
+      color: #888;
+    }
+
+    .bio-text p + p { margin-top: 1rem; }
+
+    .bio-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .stat-cell {
+      padding: 1.25rem;
+      background: var(--bg-1);
+    }
+
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 0.3em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-value {
+      font-family: var(--display);
+      font-size: 28px;
+      letter-spacing: 0.05em;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .stat-value.acid { color: var(--acid); }
+
+    /* GALLERY */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: auto;
+      gap: 2px;
+    }
+
+    .gallery-item {
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .gallery-item:nth-child(1) { grid-column: span 8; aspect-ratio: 16/9; }
+    .gallery-item:nth-child(2) { grid-column: span 4; aspect-ratio: auto; }
+    .gallery-item:nth-child(3) { grid-column: span 4; aspect-ratio: 1; }
+    .gallery-item:nth-child(4) { grid-column: span 4; aspect-ratio: 1; }
+    .gallery-item:nth-child(5) { grid-column: span 4; aspect-ratio: 1; }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(20%);
+      transition: filter 0.4s, transform 0.4s;
+    }
+
+    .gallery-item:hover img {
+      filter: grayscale(0%) brightness(1.1);
+      transform: scale(1.03);
+    }
+
+    .gallery-placeholder {
+      width: 100%;
+      height: 100%;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--bg-1);
+    }
+
+    .gallery-placeholder-icon {
+      width: 2px;
+      height: 40px;
+      background: var(--text-muted);
+      position: relative;
+    }
+
+    .gallery-placeholder-icon::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotate(90deg);
+      width: 2px;
+      height: 40px;
+      background: var(--text-muted);
+    }
+
+    .gallery-label {
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 0.25em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(6,6,6,0.7);
+      display: flex;
+      align-items: flex-end;
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+    .gallery-overlay-text {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--acid);
+    }
+
+    /* NOVEDADES */
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .news-item {
+      display: grid;
+      grid-template-columns: 100px 1fr auto;
+      align-items: center;
+      gap: 2rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-1);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.2s;
+    }
+
+    .news-item:hover { background: var(--bg-2); }
+
+    .news-item.placeholder { opacity: 0.35; pointer-events: none; }
+
+    .news-date {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--acid);
+      letter-spacing: 0.15em;
+    }
+
+    .news-title {
+      font-size: 14px;
+      font-weight: 400;
+      color: #ccc;
+      margin: 0 0 3px;
+    }
+
+    .news-sub {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.15em;
+    }
+
+    .news-arrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .news-item:hover .news-arrow {
+      color: var(--acid);
+      transform: translateX(4px);
+    }
+
+    /* LINKS */
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .link-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: var(--bg-1);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .link-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px;
+      height: 0;
+      background: var(--acid);
+      transition: height 0.3s;
+    }
+
+    .link-card:hover { background: var(--bg-2); }
+    .link-card:hover::before { height: 100%; }
+
+    .link-icon {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--acid);
+      flex-shrink: 0;
+      letter-spacing: 0.05em;
+    }
+
+    .link-name {
+      font-size: 14px;
+      font-weight: 400;
+      color: #ccc;
+      margin: 0 0 3px;
+    }
+
+    .link-handle {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* CONTACT */
+    .contact-wrap {
+      border: 1px solid var(--border);
+      padding: 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-wrap::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--acid-dim);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .contact-wrap:hover::before { opacity: 1; }
+
+    .contact-pre {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .contact-email {
+      font-family: var(--display);
+      font-size: clamp(24px, 4vw, 48px);
+      letter-spacing: 0.08em;
+      color: #fff;
+      text-decoration: none;
+      display: block;
+      transition: color 0.2s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-email:hover { color: var(--acid); }
+
+    .contact-note {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .footer-logo {
+      font-family: var(--display);
+      font-size: 20px;
+      letter-spacing: 0.1em;
+      color: #fff;
+    }
+
+    .footer-meta {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* TERMINAL BLINK */
+    .blink {
+      animation: blink 1.2s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.25rem; }
+      .nav-links { display: none; }
+      .hero { padding: 0 1.25rem 3rem; }
+      .hero-name { font-size: clamp(70px, 20vw, 130px); }
+      section { padding: 3.5rem 1.25rem; }
+      .bio-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .gallery-item:nth-child(1) { grid-column: span 12; }
+      .gallery-item:nth-child(2) { grid-column: span 12; aspect-ratio: 16/9; }
+      .gallery-item:nth-child(3),
+      .gallery-item:nth-child(4),
+      .gallery-item:nth-child(5) { grid-column: span 4; }
+      .news-item { grid-template-columns: 1fr; gap: 0.5rem; }
+      .news-date { font-size: 9px; }
+      .contact-wrap { padding: 2rem 1.25rem; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+      .footer-meta { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav id="nav">
+    <a class="nav-logo" href="#">FRODO<span class="blink">_</span></a>
+    <ul class="nav-links">
+      <li><a href="#bio">Info</a></li>
+      <li><a href="#visuals">Visuales</a></li>
+      <li><a href="#news">Novedades</a></li>
+      <li><a href="#links">Links</a></li>
+      <li><a href="#contact">Booking</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-grid"></div>
+    <div class="scan"></div>
+    <div class="hero-content">
+      <p class="hero-sys">> SYS.INIT &nbsp;<span>// DJ_PRODUCER_MODULE_v2.6</span></p>
+      <h1 class="hero-name">FRODO</h1>
+      <div class="hero-sub">
+        <span class="hero-sub-line">La Plata, <strong>Buenos Aires</strong></span>
+        <div class="hero-tags">
+          <span class="tag active">Techno</span>
+          <span class="tag active">Tech House</span>
+          <span class="tag">Experimental</span>
+        </div>
+      </div>
+      <p style="font-family: var(--mono); font-size: 10px; color: var(--text-muted); letter-spacing: 0.18em; margin-top: 1.5rem; opacity: 0; animation: fade-up 0.6s ease forwards 0.9s; font-style: italic;">"We are Particles Dancing to the Rhythm of the Universe"</p>
+    </div>
+  </section>
+
+  <!-- BIO -->
+  <section id="bio">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <div class="section-line"></div>
+      <span class="section-title">// Sobre Frodo</span>
+    </div>
+    <div class="bio-grid">
+      <div class="bio-text">
+          <p>From cybersecurity to electronic music — Frodo explora el lado oscuro y melódico de la electrónica desde La Plata, Buenos Aires. Un viaje a través de atmósferas hipnóticas y energía contenida.</p>
+        <p>Con raíces en la programación y la ciberseguridad, lleva esa misma lógica de sistemas al dancefloor: cada set es una arquitectura sonora donde nada queda al azar. Las visuales generadas con IA son parte del lenguaje artístico, una extensión del universo que construye.</p>
+        <p style="margin-top: 1.5rem; font-style: italic; color: #555; font-size: 13px; border-left: 2px solid var(--acid); padding-left: 1rem; line-height: 1.6;">"We are Particles Dancing to the Rhythm of the Universe"</p>
+      </div>
+      <div class="bio-stats">
+        <div class="stat-cell">
+          <p class="stat-label">Base</p>
+          <p class="stat-value">La <br>Plata</p>
+        </div>
+        <div class="stat-cell">
+          <p class="stat-label">Género principal</p>
+          <p class="stat-value acid">TECH<br>NO</p>
+        </div>
+        <div class="stat-cell">
+          <p class="stat-label">También</p>
+          <p class="stat-value" style="font-size:18px; line-height:1.3">TECH<br>HOUSE</p>
+        </div>
+        <div class="stat-cell">
+          <p class="stat-label">Sistemas</p>
+          <p class="stat-value" style="font-size:18px">CYBER<br>SEC</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="visuals" style="padding-top: 0;">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <div class="section-line"></div>
+      <span class="section-title">// AI Visuals</span>
+    </div>
+    <div class="gallery-grid">
+      <!-- Reemplazá src="..." con tus imágenes reales -->
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <div class="gallery-placeholder-icon"></div>
+          <span class="gallery-label">Visual 01 — subí tu imagen aquí</span>
+        </div>
+        <div class="gallery-overlay">
+          <span class="gallery-overlay-text">AI_VISUAL_001.jpg</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <div class="gallery-placeholder-icon"></div>
+          <span class="gallery-label">Visual 02</span>
+        </div>
+        <div class="gallery-overlay">
+          <span class="gallery-overlay-text">AI_VISUAL_002.jpg</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <div class="gallery-placeholder-icon"></div>
+          <span class="gallery-label">Visual 03</span>
+        </div>
+        <div class="gallery-overlay">
+          <span class="gallery-overlay-text">AI_VISUAL_003.jpg</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <div class="gallery-placeholder-icon"></div>
+          <span class="gallery-label">Visual 04</span>
+        </div>
+        <div class="gallery-overlay">
+          <span class="gallery-overlay-text">AI_VISUAL_004.jpg</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <div class="gallery-placeholder-icon"></div>
+          <span class="gallery-label">Visual 05</span>
+        </div>
+        <div class="gallery-overlay">
+          <span class="gallery-overlay-text">AI_VISUAL_005.jpg</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOVEDADES -->
+  <section id="news">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <div class="section-line"></div>
+      <span class="section-title">// Novedades</span>
+    </div>
+    <div class="news-list">
+      <!-- TEMPLATE: copiá este bloque para agregar eventos/canciones nuevas -->
+      <a href="https://soundcloud.com/matt-wiber" class="news-item" target="_blank" rel="noopener">
+        <span class="news-date">ABR 2026</span>
+        <div>
+          <p class="news-title">Nuevo mix en SoundCloud</p>
+          <p class="news-sub">soundcloud.com/matt-wiber</p>
+        </div>
+        <span class="news-arrow">→</span>
+      </a>
+      <a href="https://www.youtube.com/@FrodoSessions" class="news-item" target="_blank" rel="noopener">
+        <span class="news-date">ABR 2026</span>
+        <div>
+          <p class="news-title">Canal activo — FrodoSessions</p>
+          <p class="news-sub">youtube.com/@FrodoSessions</p>
+        </div>
+        <span class="news-arrow">→</span>
+      </a>
+      <!-- Placeholder futuros -->
+      <div class="news-item placeholder">
+        <span class="news-date">PRÓXIMO</span>
+        <div>
+          <p class="news-title">Fecha por confirmar</p>
+          <p class="news-sub">La Plata, Buenos Aires</p>
+        </div>
+        <span class="news-arrow">→</span>
+      </div>
+      <div class="news-item placeholder">
+        <span class="news-date">PRÓXIMO</span>
+        <div>
+          <p class="news-title">Nuevo track / release</p>
+          <p class="news-sub">En producción</p>
+        </div>
+        <span class="news-arrow">→</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- LINKS -->
+  <section id="links">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <div class="section-line"></div>
+      <span class="section-title">// Links</span>
+    </div>
+    <div class="links-grid">
+      <a class="link-card" href="https://soundcloud.com/matt-wiber" target="_blank" rel="noopener">
+        <div class="link-icon">SC</div>
+        <div>
+          <p class="link-name">SoundCloud</p>
+          <p class="link-handle">matt-wiber</p>
+        </div>
+      </a>
+      <a class="link-card" href="https://www.instagram.com/frodo.kicks" target="_blank" rel="noopener">
+        <div class="link-icon">IG</div>
+        <div>
+          <p class="link-name">Instagram</p>
+          <p class="link-handle">@frodo.kicks</p>
+        </div>
+      </a>
+      <a class="link-card" href="https://www.youtube.com/@FrodoSessions" target="_blank" rel="noopener">
+        <div class="link-icon">YT</div>
+        <div>
+          <p class="link-name">YouTube</p>
+          <p class="link-handle">@FrodoSessions</p>
+        </div>
+      </a>
+      <a class="link-card" href="mailto:mati.weber@gmail.com">
+        <div class="link-icon">@</div>
+        <div>
+          <p class="link-name">Email</p>
+          <p class="link-handle">mati.weber@gmail.com</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <div class="section-line"></div>
+      <span class="section-title">// Booking</span>
+    </div>
+    <div class="contact-wrap">
+      <p class="contact-pre">> INICIAR CONTACTO</p>
+      <a href="mailto:mati.weber@gmail.com" class="contact-email">mati.weber@gmail.com</a>
+      <p class="contact-note">Booking · Management · Consultas</p>
+    </div>
+  </section>
+
+  <footer>
+    <span class="footer-logo">FRODO</span>
+    <div class="footer-meta">
+      <p>La Plata, Buenos Aires, ARG</p>
+      <p style="margin-top:4px;">&copy; 2026 — Todos los derechos reservados</p>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+  </script>
+
+</body>
+</html>
