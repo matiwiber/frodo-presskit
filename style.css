@@ -42,6 +42,16 @@ body::before {
   z-index: 9999;
 }
 
+.sc-player {
+  border: 1px solid var(--border);
+  background: var(--bg-1);
+  padding: 2px;
+}
+
+.sc-player iframe {
+  display: block;
+}
+
 /* NAV */
 nav {
   position: fixed;
